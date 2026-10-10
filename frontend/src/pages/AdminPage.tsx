@@ -5,8 +5,12 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Shield, Users, Activity, FileText, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../context/ToastContext';
 
 export const AdminPage: React.FC = () => {
+  const { t } = useLanguage();
+  const { showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogOut[]>([]);
   const [sysMetrics, setSysMetrics] = useState<any>(null);
@@ -36,18 +40,23 @@ export const AdminPage: React.FC = () => {
   const handleRoleChange = async (userId: number, newRole: string) => {
     try {
       await api.put(`/admin/users/${userId}/role?new_role=${newRole}`);
-      alert(`User role successfully updated to ${newRole}`);
+      showToast(`User role successfully updated to ${newRole}`, 'success');
       fetchAdminData();
     } catch (e) {
       console.error(e);
+      showToast('Could not update role', 'info');
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-3">
-        <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Administrator Management Portal</h2>
-        <p className="text-xs text-slate-500">User Management, Role Assignments, System Metrics & Audit Trail</p>
+        <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          {t('admin_portal_title')}
+        </h2>
+        <p className="text-xs text-slate-500">
+          {t('admin_portal_sub')}
+        </p>
       </div>
 
       {sysMetrics && (
@@ -57,7 +66,7 @@ export const AdminPage: React.FC = () => {
               <Activity className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-500">System Status</div>
+              <div className="text-[11px] text-slate-500">{t('system_status')}</div>
               <div className="text-sm font-extrabold text-emerald-600">{sysMetrics.status}</div>
             </div>
           </Card>
@@ -67,7 +76,7 @@ export const AdminPage: React.FC = () => {
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-500">Total Registered Users</div>
+              <div className="text-[11px] text-slate-500">{t('total_users')}</div>
               <div className="text-sm font-extrabold text-slate-900 dark:text-white">{sysMetrics.active_users_count}</div>
             </div>
           </Card>
@@ -77,7 +86,7 @@ export const AdminPage: React.FC = () => {
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-500">Total Waste Reports</div>
+              <div className="text-[11px] text-slate-500">{t('total_reports')}</div>
               <div className="text-sm font-extrabold text-slate-900 dark:text-white">{sysMetrics.total_waste_reports}</div>
             </div>
           </Card>
@@ -87,7 +96,7 @@ export const AdminPage: React.FC = () => {
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] text-slate-500">Marketplace Items</div>
+              <div className="text-[11px] text-slate-500">{t('marketplace_items')}</div>
               <div className="text-sm font-extrabold text-slate-900 dark:text-white">{sysMetrics.marketplace_products_count}</div>
             </div>
           </Card>
@@ -96,16 +105,18 @@ export const AdminPage: React.FC = () => {
 
       {/* User Management */}
       <Card className="p-6">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">User Role Authorization Management</h3>
+        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
+          {t('user_role_mgmt')}
+        </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700 text-slate-400">
-                <th className="pb-3 font-semibold">User</th>
-                <th className="pb-3 font-semibold">Email</th>
-                <th className="pb-3 font-semibold">Current Role</th>
-                <th className="pb-3 font-semibold">Area</th>
-                <th className="pb-3 font-semibold">Role Action</th>
+                <th className="pb-3 font-semibold">{t('full_name')}</th>
+                <th className="pb-3 font-semibold">{t('email')}</th>
+                <th className="pb-3 font-semibold">{t('current_role')}</th>
+                <th className="pb-3 font-semibold">{t('assigned_area')}</th>
+                <th className="pb-3 font-semibold">{t('change_role')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
@@ -121,11 +132,11 @@ export const AdminPage: React.FC = () => {
                       onChange={(e) => handleRoleChange(u.id, e.target.value)}
                       className="p-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium"
                     >
-                      <option value="citizen">Citizen</option>
-                      <option value="collector">Collector</option>
-                      <option value="recycler">Recycler</option>
-                      <option value="administrator">Administrator</option>
-                      <option value="analyst">Analyst</option>
+                      <option value="citizen">{t('citizen')}</option>
+                      <option value="collector">{t('collector')}</option>
+                      <option value="recycler">{t('recycler')}</option>
+                      <option value="administrator">{t('administrator')}</option>
+                      <option value="analyst">{t('analyst')}</option>
                     </select>
                   </td>
                 </tr>
@@ -137,3 +148,4 @@ export const AdminPage: React.FC = () => {
     </div>
   );
 };
+
